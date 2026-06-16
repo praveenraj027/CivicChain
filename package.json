@@ -1,19 +1,30 @@
 {
     "name": "crowdpulse",
-    "version": "1.0.0",
-    "description": "CrowdPulse — Decentralized Civic Intelligence on SAYMAN Blockchain",
+    "version": "2.1.0",
+    "description": "CrowdPulse — Decentralised Civic Intelligence on SAYMAN Blockchain",
     "type": "module",
     "scripts": {
-        "deploy:local": "node scripts/deploy.js --network local",
-        "deploy:testnet": "node scripts/deploy.js --network testnet",
-        "deploy:mainnet": "node scripts/deploy.js --network mainnet",
+        "deploy:local": "SAYMAN_RPC=https://sayman.onrender.com node scripts/deploy.js --network=local",
+        "deploy:testnet": "node scripts/deploy.js --network=testnet",
+        "deploy:mainnet": "node scripts/deploy.js --network=mainnet",
         "backend": "node backend/index.js",
-        "dev": "SAYMAN_RPC=http://localhost:10000 node backend/index.js"
+        "backend:dev": "SAYMAN_RPC=https://sayman.onrender.com node backend/index.js",
+        "frontend": "cd frontend && npm run dev",
+        "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+        "dev:local": "concurrently \"npm run backend:dev\" \"npm run frontend\"",
+        "build": "cd frontend && npm run build"
     },
     "dependencies": {
-        "cors": "^2.8.5",
+        "axios": "^1.17.0",
+        "cors": "^2.8.6",
         "dotenv": "^17.4.2",
-        "elliptic": "^6.5.4",
-        "express": "^4.18.2"
+        "elliptic": "^6.5.7",
+        "ethers": "^6.16.0",
+        "express": "^4.22.2",
+        "express-rate-limit": "^7.5.1",
+        "helmet": "^8.2.0"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.0"
     }
 }

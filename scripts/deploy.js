@@ -26,7 +26,6 @@ if (!RPC_URL) {
   process.exit(1);
 }
 
-// ─── Wallet ───────────────────────────────────────────────────────────────────
 const DEFAULT_KEY = crypto.createHash('sha256').update('crowdpulse-dev-deployer-2024').digest('hex');
 const PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY || DEFAULT_KEY;
 
@@ -40,7 +39,6 @@ try {
   process.exit(1);
 }
 
-// ─── HTTP ─────────────────────────────────────────────────────────────────────
 async function rpcGet(endpoint) {
   const res  = await fetch(`${RPC_URL}${endpoint}`);
   const text = await res.text();
@@ -63,7 +61,6 @@ async function rpcPost(endpoint, body) {
   return data;
 }
 
-// ─── Chain helpers ────────────────────────────────────────────────────────────
 async function getAddressInfo() {
   try { return await rpcGet(`/api/address/${address}`); } catch {}
   try { const d = await rpcGet(`/api/balance/${address}`); return { balance: d.balance || 0, nonce: 0 }; } catch {}
@@ -90,7 +87,6 @@ async function waitForBlock(currentHeight, maxWait = 60000) {
   return null;
 }
 
-// ─── Sign ─────────────────────────────────────────────────────────────────────
 function signTx(tx) {
   const hash = crypto.createHash('sha256').update(JSON.stringify({
     type: tx.type, timestamp: tx.timestamp, data: tx.data,
@@ -99,8 +95,6 @@ function signTx(tx) {
   return keyPair.sign(hash).toDER('hex');
 }
 
-// ─── Deploy one contract ──────────────────────────────────────────────────────
-// gasLimit = 90 → maxCost = 90 SAYM (you have 100), actual cost ~9 SAYM
 async function deployContract({ name, version, code, nonce }) {
   const ts = Date.now();
   const tx = {
@@ -130,7 +124,6 @@ async function deployContract({ name, version, code, nonce }) {
   return contractAddress;
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 async function main() {
   console.log('');
   console.log('╔══════════════════════════════════════════╗');
@@ -141,7 +134,6 @@ async function main() {
   console.log(`  RPC      : ${RPC_URL}`);
   console.log(`  Deployer : ${address}`);
 
-  // Check chain
   let chainHeight = 0;
   try {
     const stats = await rpcGet('/api/stats');
@@ -152,7 +144,6 @@ async function main() {
     process.exit(1);
   }
 
-  // Check balance — auto faucet if 0
   let balance = await getBalance();
   console.log(`  Balance  : ${balance} SAYM`);
 
@@ -173,7 +164,6 @@ async function main() {
 
   console.log('');
 
-  // Contract list
   const contractsDir = path.join(__dirname, '..', 'contracts');
   const contracts = [
     { file: 'ReportRegistry.js',    name: 'ReportRegistry',    version: '1.0.0' },
@@ -193,8 +183,6 @@ async function main() {
   console.log(`  Gas      : limit=90 price=1 (max cost 90 SAYM, actual ~9 SAYM each)`);
   console.log('');
 
-  // Send ALL transactions immediately with sequential nonces
-  // so they all land in the same block — no nonce race condition
   const deployed = {};
 
   for (const c of contracts) {
@@ -221,7 +209,6 @@ async function main() {
     }
   }
 
-  // Wait ONE block for all txs to confirm
   if (Object.keys(deployed).length > 0) {
     console.log('');
     process.stdout.write(`  Mining    waiting for next block... `);
@@ -229,7 +216,6 @@ async function main() {
     console.log(newHeight ? `block #${newHeight} ✅` : `timeout ⚠ (txs may still land)`);
   }
 
-  // Verify contracts actually landed on-chain
   console.log('');
   console.log('  Verifying on-chain...');
   let verified = 0;
@@ -247,7 +233,6 @@ async function main() {
     }
   }
 
-  // Summary
   console.log('');
   console.log('══════════════════════════════════════════');
   console.log('  Deployment Summary');
@@ -266,7 +251,6 @@ async function main() {
     console.log(`  ${name.padEnd(24)} ${addr}`);
   }
 
-  // Save manifest
   const manifest = {
     network,
     rpcUrl:     RPC_URL,

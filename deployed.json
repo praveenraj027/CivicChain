@@ -2,10 +2,10 @@
   "network": "testnet",
   "rpcUrl": "https://sayman.onrender.com",
   "deployer": "750f00e7bdaee4ae0c1cc64191b4eb9f072a51ae",
-  "deployedAt": "2026-06-11T08:22:51.759Z",
+  "deployedAt": "2026-06-16T08:42:35.469Z",
   "contracts": {
-    "ReportRegistry": "b9e9789f09edf9c24f77e96282cf77a1a4a561db",
-    "ReputationManager": "1fd2f4582844d3125e43df6e1810eac0b3f922ab",
-    "RewardManager": "7b9b01dabe136b254d1f0ea549169967dc4ef82f"
+    "ReportRegistry": "38f28c93526860c4a01f8bc39d43b1ed2644f566",
+    "ReputationManager": "1d518bfcc7ff4b76ad38671bcaabe88dc188f7aa",
+    "RewardManager": "1c15514285af2f7df13cf681e9a4ec73964987a8"
   }
 }
